@@ -10,9 +10,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-st.set_page_config(page_title="RAG Q&A System", page_icon="🤖")
+st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖")
 
-st.title("RAG Q&A System")
+st.title("Assignment 1: RAG Pipeline Q&A System")
+
+st.markdown("[Access the deployed app here](https://rag-qa-system.streamlit.app/)")
 
 with st.sidebar:
     st.header("Configuration")
