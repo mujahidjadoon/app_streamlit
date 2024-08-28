@@ -1,5 +1,29 @@
 import streamlit as st
 import os
+import sys
+import subprocess
+
+# Check and install required packages
+required_packages = [
+    "langchain-community",
+    "langchain",
+    "chromadb",
+    "sentence-transformers",
+    "pypdf"
+]
+
+def install_package(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+for package in required_packages:
+    try:
+        __import__(package)
+    except ImportError:
+        st.warning(f"{package} is not installed. Installing now...")
+        install_package(package)
+        st.success(f"{package} has been installed.")
+
+# Now import the required modules
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -11,9 +35,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖")
-
 st.title("Assignment 1: RAG Pipeline Q&A System")
-
 st.markdown("[Access the deployed app here](https://rag-qa-system.streamlit.app/)")
 
 with st.sidebar:
@@ -39,14 +61,12 @@ else:
     def setup_rag():
         embeddings = HuggingFaceEmbeddings(model_name="thenlper/gte-large")
         vectorstore = Chroma.from_documents(chunks, embeddings)
-
         bm25_retriever = BM25Retriever.from_documents(chunks)
         vector_retriever = vectorstore.as_retriever()
         ensemble_retriever = EnsembleRetriever(
             retrievers=[bm25_retriever, vector_retriever],
             weights=[0.5, 0.5]
         )
-
         llm = HuggingFaceHub(
             repo_id="HuggingFaceH4/zephyr-7b-beta",
             task="text-generation",
@@ -58,12 +78,10 @@ else:
                 "return_full_text": False
             },
         )
-
         prompt_template = """
         <|system|>
         You are an AI Assistant that follows instructions extremely well.
         Please be truthful and give direct answers. Please tell 'I don't know' if user query is not in CONTEXT
-
         CONTEXT: {context}
         </s>
         <|user|>
@@ -73,7 +91,6 @@ else:
         Your answer:
         """
         prompt = ChatPromptTemplate.from_template(prompt_template)
-
         output_parser = StrOutputParser()
         rag_chain = (
             {"context": ensemble_retriever, "query": RunnablePassthrough()}
@@ -81,15 +98,29 @@ else:
             | llm
             | output_parser
         )
-
         return rag_chain
 
     with st.spinner("Setting up RAG pipeline..."):
         rag_chain = setup_rag()
 
     query = st.text_input("Enter your question:")
-
     if query:
         with st.spinner("Generating answer..."):
             response = rag_chain.invoke(query)
         st.write("Answer:", response)
+
+# Add information about required files
+st.sidebar.markdown("---")
+st.sidebar.subheader("Required Files")
+st.sidebar.info(
+    "Make sure you have a 'pdfs' folder in the same directory as this script, "
+    "containing the PDF documents you want to use for the RAG system."
+)
+
+# Add information about deployment
+st.sidebar.markdown("---")
+st.sidebar.subheader("Deployment")
+st.sidebar.info(
+    "To deploy this app, make sure you have a 'requirements.txt' file "
+    "in your repository with all the necessary dependencies listed."
+)
