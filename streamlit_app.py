@@ -41,8 +41,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-st.markdown("[Access the deployed app here](https://rag-qa-system.streamlit.app/)")
-
 with st.sidebar:
     st.header("Configuration")
     api_key = st.text_input("Enter your HuggingFace API Key:", type="password")
