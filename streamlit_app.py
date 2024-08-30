@@ -10,14 +10,20 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖")
-st.title("Assignment 1: RAG Pipeline Q&A System")
+st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖", layout="wide")
 
-with st.sidebar:
-    st.header("Configuration")
-    api_key = st.text_input("Enter your HuggingFace API Key:", type="password")
-    if api_key:
-        os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_key
+# Sidebar
+st.sidebar.title("Configuration")
+st.sidebar.markdown("---")
+api_key = st.sidebar.text_input("Enter your HuggingFace API Key:", type="password")
+if api_key:
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_key
+
+st.sidebar.markdown("---")
+st.sidebar.info("Make sure you have a 'pdfs' folder with your documents.")
+
+# Main content
+st.title("Assignment 1: RAG Pipeline Q&A System")
 
 if "HUGGINGFACEHUB_API_TOKEN" not in os.environ:
     st.warning("Please enter your HuggingFace API Key in the sidebar to proceed.")
@@ -84,4 +90,5 @@ else:
             response = rag_chain.invoke(query)
         st.write("Answer:", response)
 
-st.sidebar.info("Make sure you have a 'pdfs' folder with your documents.")
+st.sidebar.markdown("---")
+st.sidebar.text("© 2024 RAG Q&A System")
