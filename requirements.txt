@@ -5,6 +5,3 @@ chromadb==0.4.24
 sentence-transformers==2.5.0
 pypdf==4.1.0
 huggingface-hub==0.21.4
-torch
-torchvision
-torchaudio
