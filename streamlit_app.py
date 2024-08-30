@@ -2,7 +2,18 @@ import streamlit as st
 import os
 import sys
 
-# Check for required packages
+st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖")
+st.title("Assignment 1: RAG Pipeline Q&A System")
+
+# Function to check if a package is installed
+def is_package_installed(package_name):
+    try:
+        __import__(package_name)
+        return True
+    except ImportError:
+        return False
+
+# List of required packages
 required_packages = [
     "langchain_community",
     "langchain",
@@ -11,19 +22,15 @@ required_packages = [
     "pypdf"
 ]
 
-missing_packages = []
-for package in required_packages:
-    try:
-        __import__(package)
-    except ImportError:
-        missing_packages.append(package)
+# Check for missing packages
+missing_packages = [pkg for pkg in required_packages if not is_package_installed(pkg)]
 
 if missing_packages:
     st.error(f"The following required packages are missing: {', '.join(missing_packages)}")
-    st.info("Please install the missing packages before running this app.")
+    st.info("Please contact the administrator to install the missing packages.")
     st.stop()
 
-# Now import the required modules
+# If all packages are available, proceed with imports
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -34,8 +41,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-st.set_page_config(page_title="Assignment 1: RAG Q&A System", page_icon="🤖")
-st.title("Assignment 1: RAG Pipeline Q&A System")
 st.markdown("[Access the deployed app here](https://rag-qa-system.streamlit.app/)")
 
 with st.sidebar:
@@ -121,9 +126,9 @@ st.sidebar.info(
 st.sidebar.markdown("---")
 st.sidebar.subheader("Deployment")
 st.sidebar.info(
-    "To deploy this app, make sure you have a 'requirements.txt' file "
-    "in your repository with all the necessary dependencies listed."
+    "This app requires specific packages to be pre-installed in the deployment environment. "
+    "Contact the administrator if you encounter any missing package errors."
 )
 
 if __name__ == "__main__":
-    print("Script executed successfully")
+    st.success("Script loaded successfully")
